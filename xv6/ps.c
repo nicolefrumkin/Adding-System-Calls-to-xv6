@@ -4,17 +4,19 @@
 #include "processInfo.h"
 
 void printProcessInfo(int pid) {
-    struct processInfo pinfo;
-    if (getProcInfo(pid, &pinfo) < 0) {
-        //printf(1, "Error: Failed to get information for PID %d\n", pid);
-        return;
-    }
+    struct processInfo* pinfo = malloc(sizeof(struct processInfo));
+    pinfo->nfd =1;
+    pinfo->nrswitch = 4;
+    pinfo->ppid = 69;
+    pinfo->sz = 420;
+    pinfo->state = getProcInfo(pid, pinfo);
+
 
     //printf(1,"pinfo->state: %d\n", pinfo.state); // for debug
     // Print process information
     char *state;
 
-    switch (pinfo.state) {
+    switch (pinfo->state) {
         case 0: state = "EMBRYO"; break;
         case 1: state = "RUNNING"; break;
         case 2: state = "RUNNABLE"; break;
@@ -22,10 +24,9 @@ void printProcessInfo(int pid) {
         case 4: state = "ZOMBIE"; break;
         default: state = "UNKNOWN"; break;
     }
-    printf(1,"state is: %d\n", state);
-
     printf(1, "%d\t%s\t%d\t%d\t%d\t%d\n",
-           pid, state, pinfo.ppid, pinfo.sz, pinfo.nfd, pinfo.nrswitch);
+           pid, state, pinfo->ppid, pinfo->sz, pinfo->nfd, pinfo->nrswitch);
+    free(pinfo);
 }
 
 int main(int argc, char *argv[]) {
