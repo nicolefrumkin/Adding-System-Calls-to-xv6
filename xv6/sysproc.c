@@ -89,3 +89,19 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+int 
+sys_getnumproc(void){
+  return getNumProc();
+}
+
+int
+sys_getmaxpid(void){
+  return getMaxPid();
+}
+
+int
+sys_getprocinfo(void){
+  struct processInfo* proc_info;
+  return getProcInfo(myproc()->pid, &proc_info);
+}
