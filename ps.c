@@ -20,10 +20,10 @@
 
     NRSWITCH (Number of Context Switches): 
     The number of times the CPU has switched between this process and another one. 
-    There are two types:
-    - Voluntary: When a process willingly gives up CPU (e.g., waiting for I/O)
-    - Involuntary: When the operating system forces a switch to another process
 */
+
+#include <processInfo.h>
+
 int main() {
     printf("Total number of active processes: %d\n", active_processes);
     printf("Maximum PID: %d\n", max_pid);
