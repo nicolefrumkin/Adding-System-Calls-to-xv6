@@ -4963,11 +4963,6 @@ kalloc(void)
 8010278e:	66 90                	xchg   %ax,%ax
 
 80102790 <kbdgetc>:
-static inline uchar
-inb(ushort port)
-{
-  uchar data;
-
   asm volatile("in %1,%0" : "=a" (data) : "d" (port));
 80102790:	ba 64 00 00 00       	mov    $0x64,%edx
 80102795:	ec                   	in     (%dx),%al
@@ -5301,11 +5296,6 @@ void
 lapicstartap(uchar apicid, uint addr)
 {
 801029e0:	55                   	push   %ebp
-}
-
-static inline void
-outb(ushort port, uchar data)
-{
   asm volatile("out %0,%1" : : "a" (data), "d" (port));
 801029e1:	b8 0f 00 00 00       	mov    $0xf,%eax
 801029e6:	ba 70 00 00 00       	mov    $0x70,%edx
@@ -6657,7 +6647,6 @@ mpinit(void)
 801034bf:	90                   	nop
 
 801034c0 <picinit>:
-  asm volatile("out %0,%1" : : "a" (data), "d" (port));
 801034c0:	b8 ff ff ff ff       	mov    $0xffffffff,%eax
 801034c5:	ba 21 00 00 00       	mov    $0x21,%edx
 801034ca:	ee                   	out    %al,(%dx)
@@ -9240,11 +9229,6 @@ memset(void *dst, int c, uint n)
 801049b2:	0f b6 45 0c          	movzbl 0xc(%ebp),%eax
     stosl(dst, (c<<24)|(c<<16)|(c<<8)|c, n/4);
 801049b6:	c1 e9 02             	shr    $0x2,%ecx
-}
-
-static inline void
-stosl(void *addr, int data, int cnt)
-{
   asm volatile("cld; rep stosl" :
 801049b9:	89 d7                	mov    %edx,%edi
 801049bb:	69 c0 01 01 01 01    	imul   $0x1010101,%eax,%eax

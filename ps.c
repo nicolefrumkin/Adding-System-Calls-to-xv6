@@ -1,32 +1,50 @@
-/*
-    STATES:
-    EMBRYO: A baby process that's still being born/created in the system.
-    RUNNING: The process is actively being executed by the CPU right now.
-    RUNNABLE: The process is ready to run and just waiting for its turn on the CPU.
-    SLEEPING: The process is taking a nap while waiting for something it needs (like a file or network data).
-    ZOMBIE: A process that's finished running but its parent process hasn't acknowledged its death yet.   
+#include "types.h"
+#include "stat.h"
+#include "user.h"
+#include "processInfo.h"
 
-    PPID (Parent Process ID): The PID of the process that created this process. 
+void printProcessInfo(int pid) {
+    struct processInfo pinfo;
+    if (getProcInfo(pid, &pinfo) < 0) {
+        printf(1, "Error: Failed to get information for PID %d\n", pid);
+        return;
+    }
 
-    SZ (Size): The total size of the process in memory pages. 
-    This includes code, data, and stack segments. 
-    On most systems, a page is 4KB, 
-    so multiplying SZ by 4 gives you the approximate size in kilobytes.
+    // Print process information
+    char *state;
+    switch (pinfo.state) {
+        case 0: state = "EMBRYO"; break;
+        case 1: state = "RUNNING"; break;
+        case 2: state = "RUNNABLE"; break;
+        case 3: state = "SLEEPING"; break;
+        case 4: state = "ZOMBIE"; break;
+        default: state = "UNKNOWN"; break;
+    }
 
-    NFD (Number of File Descriptors):
-    The count of open file descriptors (files, pipes, sockets, etc.) 
-    that the process is currently using. 
-    Each open file or network connection consumes a file descriptor.
+    printf(1, "%d\t%s\t%d\t%d\t%d\t%d\n",
+           pid, state, pinfo.ppid, pinfo.sz, pinfo.nfd, pinfo.nrswitch);
+}
 
-    NRSWITCH (Number of Context Switches): 
-    The number of times the CPU has switched between this process and another one. 
-*/
+int main(int argc, char *argv[]) {
+    int totalProcesses = getNumProc();
+    int maxPid = getMaxPid();
 
-#include <processInfo.h>
+    if (totalProcesses < 0 || maxPid < 0) {
+        printf(1, "Error: Failed to retrieve system information\n");
+        exit();
+    }
 
-int main() {
-    printf("Total number of active processes: %d\n", active_processes);
-    printf("Maximum PID: %d\n", max_pid);
-    printf("PID    STATE    PPID    SZ    NFD    NRSWITCH");
-    return 0;
+    // Print header information
+    printf(1, "Total number of active processes: %d\n", totalProcesses);
+    printf(1, "Maximum PID: %d\n\n", maxPid);
+
+    // Print table header
+    printf(1, "PID\tSTATE\tPPID\tSZ\tNFD\tNRSWITCH\n");
+
+    // Iterate through all possible PIDs and print process info
+    for (int pid = 1; pid <= maxPid; pid++) {
+        printProcessInfo(pid);
+    }
+
+    exit();
 }
