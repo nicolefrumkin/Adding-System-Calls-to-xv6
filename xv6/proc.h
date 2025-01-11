@@ -56,6 +56,7 @@ struct proc {
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
   int nrswitch;                // Number of context switches
+  int nfd;                     // Number of open file descriptors
 };
 
 // Process memory is laid out contiguously, low addresses first:

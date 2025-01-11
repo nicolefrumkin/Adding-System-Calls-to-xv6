@@ -88,6 +88,8 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
+  p->nrswitch = 0;
+  p->nfd = 0;
 
   release(&ptable.lock);
 
@@ -204,8 +206,10 @@ fork(void)
   np->tf->eax = 0;
 
   for(i = 0; i < NOFILE; i++)
-    if(curproc->ofile[i])
+    if(curproc->ofile[i]){
       np->ofile[i] = filedup(curproc->ofile[i]);
+    }
+  np->nfd = curproc->nfd; // taking for new process the number of file descriptors from the parent process
   np->cwd = idup(curproc->cwd);
 
   safestrcpy(np->name, curproc->name, sizeof(curproc->name));
@@ -241,6 +245,7 @@ exit(void)
       curproc->ofile[fd] = 0;
     }
   }
+  p->nfd = 0; // setting the number of file descriptors to 0  
 
   begin_op();
   iput(curproc->cwd);
@@ -368,6 +373,7 @@ sched(void)
   int intena;
   struct proc *p = myproc();
 
+  p->nrswitch++; // added for counting number of context switches
   if(!holding(&ptable.lock))
     panic("sched ptable.lock");
   if(mycpu()->ncli != 1)
@@ -570,17 +576,25 @@ getMaxPid(void) {
   return max_pid;
 }
 
-int 
-getProcInfo(int pid, struct processInfo* proc_info) {
+int getProcInfo(int pid, struct processInfo* proc_info) {
   struct proc *p;
   int found = 0;
 
   acquire(&ptable.lock);
+
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
     if(p->pid == pid) {
-      proc_info->ppid = p->parent ? p->parent->pid : 0;
+
       proc_info->state = p->state;
+      proc_info->ppid = p->parent ? p->parent->pid : 0;
+      proc_info->sz = p->sz;
+      proc_info->nrswitch = p->nrswitch; //FIXME -to do
       found = 1;
+      for(int i = 0; i<NOFILE; i++) {
+        if (p->ofile[i] != 0){
+          proc_info->nfd++;
+        }    
+     }
       break;
     }
   }
