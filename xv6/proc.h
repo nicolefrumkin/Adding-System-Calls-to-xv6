@@ -1,3 +1,5 @@
+#include "processInfo.h"
+
 // Per-CPU state
 struct cpu {
   uchar apicid;                // Local APIC ID
