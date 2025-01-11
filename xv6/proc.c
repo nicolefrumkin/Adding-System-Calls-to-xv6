@@ -584,9 +584,7 @@ int getProcInfo(int pid, struct processInfo* proc_info) {
 
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
     if(p->pid == pid) {
-      cprintf("state is: %d\n", p->state);
       proc_info->state = p->state;
-      cprintf("state is: %d\n", proc_info->state);
       proc_info->ppid = p->parent ? p->parent->pid : 0;
       proc_info->sz = p->sz;
       proc_info->nrswitch = p->nrswitch; //FIXME -to do
@@ -601,5 +599,5 @@ int getProcInfo(int pid, struct processInfo* proc_info) {
   }
   release(&ptable.lock);
 
-  return p->state;
+  return 0;
 }

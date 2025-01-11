@@ -103,16 +103,8 @@ sys_getmaxpid(void){
 int
 sys_getprocinfo(void) {
   int pid;
-  struct processInfo proc_info;
-
-  if(argint(0, &pid) < 0)
+  struct processInfo *proc_info;
+  if (argint(0, &pid) < 0 || argptr(1, (char **)&proc_info, sizeof(*proc_info)) < 0)
     return -1;
-
-  if(getProcInfo(pid, &proc_info) < 0)
-    return -1;
-
-  if(argptr(1, (void*)&proc_info, sizeof(proc_info)) < 0)
-    return -1;
-
-  return 0;
+  return getProcInfo(pid, proc_info);
 }
