@@ -7,33 +7,6 @@ void itoa(int num, char *str, int base);
 void printPaddedString(const char *str, int width);
 void printPaddedInt(int num, int width);
 
-void printProcessInfo(int pid) {
-    struct processInfo* pinfo = malloc(sizeof(struct processInfo));
-    getProcInfo(pid, pinfo);
-
-    //printf(1,"pinfo->state: %d\n", pinfo.state); // for debug
-    // Print process information
-    char *state;
-
-    switch (pinfo->state) {
-        case 0: state = "EMBRYO"; break;
-        case 1: state = "RUNNING"; break;
-        case 2: state = "RUNNABLE"; break;
-        case 3: state = "SLEEPING"; break;
-        case 4: state = "ZOMBIE"; break;
-        default: state = "UNKNOWN"; break;
-    }
-    // Print process information with fixed-width formatting
-        printPaddedInt(pid, 10);
-        printPaddedString(state, 10);
-        printPaddedInt(pinfo->ppid, 10);
-        printPaddedInt(pinfo->sz, 10);
-        printPaddedInt(pinfo->nfd, 10);
-        printPaddedInt(pinfo->nrswitch, 10);
-        printf(1, "\n");
-    free(pinfo);
-}
-
 int main(int argc, char *argv[]) {
     int totalProcesses = getNumProc();
     int maxPid = getMaxPid();
@@ -58,7 +31,9 @@ int main(int argc, char *argv[]) {
 
     // Iterate through all possible PIDs and print process info
     for (int pid = 1; pid <= maxPid; pid++) {
-        printProcessInfo(pid);
+        struct processInfo* pinfo = malloc(sizeof(struct processInfo));
+        getProcInfo(pid, pinfo);
+        free(pinfo);
     }
 
     exit();

@@ -589,15 +589,88 @@ int getProcInfo(int pid, struct processInfo* proc_info) {
       proc_info->sz = p->sz;
       proc_info->nrswitch = p->nrswitch; //FIXME -to do
       found = 1;
+      // Print process information with fixed-width formatting
+      //cprintf("%d\t%d\t%d\t%d\t%d\t%d", pid, proc_info->state, proc_info->ppid, proc_info->sz, proc_info->nfd, proc_info->nrswitch);
+      printPaddedInt(pid, 10);
+      printPaddedString(proc_info->state, 10);
+      printPaddedInt(proc_info->ppid, 10);
+      printPaddedInt(proc_info->sz, 10);
+      printPaddedInt(proc_info->nfd, 10);
+      printPaddedInt(proc_info->nrswitch, 10);
+      cprintf("\n");
       for(int i = 0; i<NOFILE; i++) {
         if (p->ofile[i] != 0){
           proc_info->nfd++;
         }    
      }
+      
       break;
     }
   }
   release(&ptable.lock);
 
   return 0;
+}
+
+void printPaddedString(int num, int width) {
+      char *state;
+
+    switch(num) {
+        case 0: state = "EMBRYO"; break;
+        case 1: state = "RUNNING"; break;
+        case 2: state = "RUNNABLE"; break;
+        case 3: state = "SLEEPING"; break;
+        case 4: state = "ZOMBIE"; break;
+        default: state = "UNKNOWN"; break;
+    }
+    int len = strlen(state); // fixme to check
+    cprintf("%s", state);
+    for (int i = len; i < width; i++) {
+        cprintf(" ");
+    }
+}
+
+void printPaddedInt(int num, int width) {
+    char buffer[16];
+    itoa(num, buffer, 10); // Convert integer to string
+    int len = strlen(buffer); // fixme to check
+    cprintf("%s", buffer);
+    for (int i = len; i < width; i++) {
+        cprintf(" ");
+    }
+}
+
+// Minimal implementation of `itoa` for xv6
+void itoa(int num, char *str, int base) {
+    int i = 0;
+    int isNegative = 0;
+
+    if (num == 0) {
+        str[i++] = '0';
+        str[i] = '\0';
+        return;
+    }
+
+    if (num < 0 && base == 10) {
+        isNegative = 1;
+        num = -num;
+    }
+
+    while (num != 0) {
+        int rem = num % base;
+        str[i++] = (rem > 9) ? (rem - 10) + 'a' : rem + '0';
+        num = num / base;
+    }
+
+    if (isNegative) {
+        str[i++] = '-';
+    }
+
+    str[i] = '\0';
+
+    for (int j = 0; j < i / 2; j++) {
+        char temp = str[j];
+        str[j] = str[i - j - 1];
+        str[i - j - 1] = temp;
+    }
 }
