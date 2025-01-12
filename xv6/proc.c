@@ -616,11 +616,11 @@ void printPaddedString(int num, int width) {
       char *state;
 
     switch(num) {
-        case 0: state = "EMBRYO"; break;
-        case 1: state = "RUNNING"; break;
-        case 2: state = "RUNNABLE"; break;
-        case 3: state = "SLEEPING"; break;
-        case 4: state = "ZOMBIE"; break;
+        case 1: state = "EMBRYO"; break;
+        case 2: state = "RUNNING"; break;
+        case 3: state = "RUNNABLE"; break;
+        case 4: state = "SLEEPING"; break;
+        case 5: state = "ZOMBIE"; break;
         default: state = "UNKNOWN"; break;
     }
     int len = strlen(state); // fixme to check
