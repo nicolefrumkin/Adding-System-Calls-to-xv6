@@ -16,6 +16,7 @@ int getNumProc(void);
 int getMaxPid(void);
 int getProcInfo(int pid, struct processInfo* proc_info);
 
+
 extern struct cpu cpus[NCPU];
 extern int ncpu;
 

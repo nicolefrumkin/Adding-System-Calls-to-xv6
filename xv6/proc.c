@@ -7,6 +7,10 @@
 #include "proc.h"
 #include "spinlock.h"
 
+void itoa(int num, char *str, int base);
+void printPaddedString(int num, int width);
+void printPaddedInt(int num, int width);
+
 struct {
   struct spinlock lock;
   struct proc proc[NPROC];
@@ -612,14 +616,15 @@ int getProcInfo(int pid, struct processInfo* proc_info) {
   return 0;
 }
 
+
 void printPaddedString(int num, int width) {
       char *state;
 
     switch(num) {
         case 1: state = "EMBRYO"; break;
-        case 2: state = "RUNNING"; break;
+        case 2: state = "SLEEPING"; break;
         case 3: state = "RUNNABLE"; break;
-        case 4: state = "SLEEPING"; break;
+        case 4: state = "RUNNING"; break;
         case 5: state = "ZOMBIE"; break;
         default: state = "UNKNOWN"; break;
     }
